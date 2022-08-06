@@ -1,16 +1,113 @@
 use crate::card::Card;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
-pub struct Player {
-    hand: Vec<Card>,
+pub struct User {
+    hand: Hand,
 }
 
-impl Player {
-    pub fn new() -> Self {
-        let hand = Vec::<Card>::new();
-        Player { hand }
+impl Player for User {
+    fn new() -> Self {
+        Self { hand: Hand::new() }
     }
 
+    fn do_turn(&mut self) {
+        self.do_turn();
+    }
+
+    fn take_cards(&mut self, drawn: Vec<Card>) {
+        self.hand.contents = drawn;
+    }
+
+    fn show_cards(&self) {
+        self.hand.show_hand();
+    }
+}
+
+
+#[derive(Clone)]
+pub struct Dealer {
+    hand: Hand,
+}
+
+impl Player for Dealer {
+    fn new() -> Self {
+        Self { hand: Hand::new() }
+    }
+
+    fn do_turn(&mut self) {
+        self.do_turn();
+    }
+
+    fn take_cards(&mut self, drawn: Vec<Card>) {
+        self.hand.contents = drawn;
+    }
+
+    fn show_cards(&self) {
+        self.hand.show_hand();
+    }
+}
+
+pub trait Player {
+    fn new() -> Self;
+    fn do_turn(&mut self);
+    fn take_cards(&mut self, drawn: Vec<Card>);
+    fn show_cards(&self);
+    //fn print_hand(&self);
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+struct Hand {
+    contents: Vec<Card>,
+}
+
+impl Hand {
+    fn new() -> Self {
+        let temp = Vec::<Card>::new();
+        Self { contents: temp }
+    }
+
+    fn show_hand(&self) {
+        let top = vec![" _____ ".to_owned(); self.contents.len()].join("");
+
+        let suits = self
+            .contents
+            .iter()
+            .map(|x| format!("|{}    |", x.get_suit()))
+            .collect::<String>();
+
+        let faces = self
+            .contents
+            .iter()
+            .map(|x| format!("|  {}  |", x.get_face()))
+            .collect::<String>();
+
+        let values = self
+            .contents
+            .iter()
+            .map(|x| {
+                format!(
+                    "|    {}|",
+                    if x.get_value().to_string().chars().nth(0).unwrap() == x.get_face() {
+                        x.get_suit().to_string()
+                    } else if x.get_value() == 0 {
+                        " ".to_owned()
+                    } else {
+                        match x.get_value().to_string().len() {
+                            1 => x.get_value().to_string(),
+                            2 => format!("\x08{}", x.get_value()),
+                            _ => "".to_owned(),
+                        }
+                    }
+                )
+            })
+            .collect::<String>();
+
+        let bot = vec![" ‾‾‾‾‾ "; self.contents.len()].join("");
+        println!("{top}\n{suits}\n{faces}\n{values}\n{bot}");
+    }
+}
+
+/*
     pub fn print_hand(&self) {
         let top = vec![" _____ ".to_owned(); self.hand.len()].join("");
 
@@ -56,29 +153,4 @@ impl Player {
     pub fn take_cards(&mut self, drawn: Vec<Card>) {
         self.hand = drawn;
     }
-}
-
-#[derive(Clone)]
-pub struct Dealer {
-    contents: Player,
-}
-
-impl Dealer {
-    pub fn new() -> Self {
-        Self {
-            contents: Player::new(),
-        }
-    }
-
-    pub fn do_turn(&mut self) {
-        self.contents.do_turn();
-    }
-
-    pub fn take_cards(&mut self, drawn: Vec<Card>) {
-        self.contents.hand = drawn;
-    }
-
-    pub fn show_cards(&self) {
-        self.contents.print_hand();
-    }
-}
+}*/

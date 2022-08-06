@@ -1,6 +1,6 @@
 use crate::{
     card::Card,
-    player::{Dealer, Player},
+    player::*,
 };
 use rand::{seq::SliceRandom, thread_rng};
 use std::{
@@ -21,7 +21,7 @@ macro_rules! input {
 #[derive(Clone)]
 pub struct Game {
     deck: VecDeque<Card>,
-    players: Vec<Player>,
+    users: Vec<User>,
     dealer: Dealer,
 }
 
@@ -63,13 +63,13 @@ impl Game {
         println!("Loading player...");
         let player_count = 1;
         let server = Dealer::new();
-        let mut players = Vec::<Player>::new();
+        let mut users = Vec::<User>::new();
         for _x in 0..player_count {
-            players.push(Player::new());
+            users.push(User::new());
         }
         Game {
             deck,
-            players,
+            users,
             dealer: server,
         }
     }
@@ -78,14 +78,14 @@ impl Game {
         &self.dealer
     }
 
-    pub fn get_players(&self) -> &Vec<Player> {
-        &self.players
+    pub fn get_players(&self) -> &Vec<User> {
+        &self.users
     }
 
     pub fn game_loop(&mut self) -> bool {
         println!("Dealing...");
         self.deal();
-        let mut players = self.players.clone();
+        let mut players = self.users.clone();
         for idx in 0..players.len() {
             players[idx].do_turn();
         }
@@ -94,10 +94,10 @@ impl Game {
 
     //Shhh... since im too lazy to try and implement the standard method of dealing, im just gonna shuffle it between every drawing of 5 cards
     pub fn deal(&mut self) {
-        let mut players = self.players.clone();
+        let mut players = self.users.clone();
         for idx in 0..players.len() {
             players[idx].take_cards(self.draw(5));
-            self.players[idx] = players[idx].clone();
+            self.users[idx] = players[idx].clone();
             self.shuffle(false);
         }
         let drawn = self.draw(5);
@@ -158,6 +158,6 @@ fn players_test() {
     let mut gayme = Game::new();
     //gayme.shuffle();
     gayme.deal();
-    println!("{:?}", gayme.players);
+    println!("{:?}", gayme.users);
     println!("\n\n{:?}", gayme.deck);
 }

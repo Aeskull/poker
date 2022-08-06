@@ -1,5 +1,5 @@
 use game::Game;
-use player::Player;
+use player::*;
 use std::{fmt::format, io::stdin};
 
 use crate::card::Card;
@@ -32,7 +32,7 @@ fn menu() -> bool {
 
 #[test]
 fn hand_test() {
-    let mut player = Player::new();
+    let mut player = player::User::new();
     let mut cards = Vec::<card::Card>::new();
     cards.push(card::Card::new('D', "King".to_owned(), 10));
     cards.push(card::Card::new('S', "Queen".to_owned(), 10));
@@ -40,7 +40,7 @@ fn hand_test() {
     cards.push(card::Card::new('H', "Ace".to_owned(), 1));
 
     player.take_cards(cards);
-    player.print_hand();
+    player.show_cards();
 }
 
 #[test]
@@ -58,6 +58,6 @@ fn game_shuffle_hand_test() {
             "Player: {}",
             showdown.iter().position(|x| x == player).unwrap() + 1
         );
-        player.print_hand();
+        player.show_cards();
     }
 }
