@@ -39,7 +39,7 @@ impl Game {
         for suit in suits {
             let mut idx = 0;
             for face in &faces {
-                deck.push_back(Card::new(suit, face.to_owned(), values[idx]));
+                deck.push_back(Card::new(suit, *face, values[idx]));
                 idx += 1;
             }
         }
