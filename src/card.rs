@@ -6,7 +6,7 @@ pub struct Card {
 }
 
 impl Card {
-    pub fn new(suit_c: char, face: String, value: i32) -> Self {
+    pub fn new(suit_c: char, face_str: &str, value: i32) -> Self {
         let suit = match suit_c {
             'D' => Suit::Diamonds,
             'C' => Suit::Clubs,
@@ -14,6 +14,7 @@ impl Card {
             'H' => Suit::Hearts,
             _ => Suit::None,
         };
+        let face = face_str.to_owned();
         Card { suit, face, value }
     }
 

@@ -1,6 +1,6 @@
 use crate::{
-    card::Card,
-    player::*,
+    card::{Card, self},
+    player::{Dealer, User, Player, self},
 };
 use rand::{seq::SliceRandom, thread_rng};
 use std::{
@@ -39,7 +39,7 @@ impl Game {
         for suit in suits {
             let mut idx = 0;
             for face in &faces {
-                deck.push_back(Card::new(suit, face.to_owned().to_owned(), values[idx]));
+                deck.push_back(Card::new(suit, face.to_owned(), values[idx]));
                 idx += 1;
             }
         }
@@ -60,8 +60,13 @@ impl Game {
         let player_count = inp.parse::<i32>().unwrap();
 
         println!("Loading players..."); */
-        println!("Loading player...");
         let player_count = 1;
+        if player_count >= 2 {
+            println!("Loading Players...");
+        }
+        else {
+            println!("Loading Player...");
+        }
         let server = Dealer::new();
         let mut users = Vec::<User>::new();
         for _x in 0..player_count {
@@ -109,7 +114,7 @@ impl Game {
         for _x in 0..i {
             ret.push(match self.deck.pop_front() {
                 Some(e) => e,
-                None => Card::new('I', "I".to_owned(), 0),
+                None => Card::new('I', "I", 0),
             });
         }
 
@@ -133,11 +138,11 @@ fn draw_test() {
     let mut gayme = Game::new();
     let mut g = VecDeque::<Card>::new();
     for x in 1..=2 {
-        g.push_back(Card::new('A', "A".to_owned(), x));
+        g.push_back(Card::new('A', "A", x));
     }
     let mut y = VecDeque::<Card>::new();
     for a in 3..=5 {
-        y.push_back(Card::new('A', "A".to_owned(), a));
+        y.push_back(Card::new('A', "A", a));
     }
     let t = gayme.draw(2);
     assert_eq!(VecDeque::from(t), g);
@@ -160,4 +165,44 @@ fn players_test() {
     gayme.deal();
     println!("{:?}", gayme.users);
     println!("\n\n{:?}", gayme.deck);
+}
+
+
+#[test]
+fn hand_test() {
+    let mut user = player::User::new();
+    let mut cards = Vec::<card::Card>::new();
+    cards.push(card::Card::new('D', "King", 10));
+    cards.push(card::Card::new('S', "Queen", 10));
+    cards.push(card::Card::new('C', "Jack", 10));
+    cards.push(card::Card::new('H', "Ace", 1));
+
+    user.take_cards(cards);
+    user.show_cards();
+}
+
+#[test]
+fn game_shuffle_hand_test() {
+    let mut gayme = Game::new();
+    gayme.shuffle(true);
+    gayme.deal();
+
+    println!("Dealer:");
+    gayme.get_dealer().show_cards();
+
+    let showdown = gayme.get_players().clone();
+    for user in &showdown {
+        println!(
+            "Player: {}",
+            showdown.iter().position(|x| x == user).unwrap() + 1
+        );
+        user.show_cards();
+    }
+}
+
+#[test]
+fn invalid_card_test() {
+    let mut user = User::new();
+    user.take_cards(vec![Card::new('I', "Invalid", 0), Card::new('S', "King", 10)]);
+    user.show_cards();
 }
