@@ -1,5 +1,5 @@
-use crate::{card::Card, game::Game};
-use std::io::{stdout, stdin, Write};
+use crate::card::Card;
+use std::io::{stdin, stdout, Write};
 
 macro_rules! input {
     () => {
@@ -13,7 +13,7 @@ macro_rules! input {
 
 pub trait Player {
     fn new() -> Self;
-    fn do_turn(&mut self, pos: usize) -> bool;
+    fn do_turn(&mut self) -> bool; //? Will re-add the 'pos: usize' parameter should it become necessary
     fn take_cards(&mut self, drawn: Vec<Card>);
     fn append_hand(&mut self, drawn: &Vec<Card>);
     fn show_cards(&self);
@@ -31,7 +31,7 @@ impl Player for User {
         Self { hand: Hand::new() }
     }
 
-    fn do_turn(&mut self, pos: usize) -> bool {
+    fn do_turn(&mut self) -> bool {
         self.hand.sort();
         println!("Your Hand:");
         self.show_cards();
@@ -71,7 +71,6 @@ impl Player for User {
     }
 }
 
-
 #[derive(Clone)]
 pub struct Dealer {
     hand: Hand,
@@ -82,7 +81,7 @@ impl Player for Dealer {
         Self { hand: Hand::new() }
     }
 
-    fn do_turn(&mut self, pos: usize) -> bool {
+    fn do_turn(&mut self) -> bool {
         println!("Dealer: ");
         self.hand.sort();
         self.show_cards();
@@ -171,7 +170,7 @@ impl Hand {
                 'H' => hearts.push(x),
                 'D' => diamonds.push(x),
                 'C' => clubs.push(x),
-                _ => {},
+                _ => {}
             };
         });
 

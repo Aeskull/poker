@@ -1,5 +1,3 @@
-use std::cmp::Ordering;
-
 #[derive(Debug, PartialEq, Eq, Clone, PartialOrd)]
 pub struct Card {
     suit: Suit,

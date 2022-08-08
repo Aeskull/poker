@@ -1,7 +1,7 @@
 use crate::{
-    card::{self, Card},
-    compare::{self, ToCompare},
-    player::{self, Dealer, Hand, Player, User},
+    card::Card,
+    compare::ToCompare,
+    player::{Dealer, Hand, Player, User},
 };
 use rand::{seq::SliceRandom, thread_rng};
 use std::collections::VecDeque;
@@ -15,7 +15,7 @@ pub enum GameState {
 #[derive(Clone)]
 pub struct Game {
     compare: ToCompare,
-    deck: VecDeque<Card>,
+    pub deck: VecDeque<Card>,
     users: Vec<User>,
     dealer: Dealer,
     flop: Hand,
@@ -81,14 +81,6 @@ impl Game {
         }
     }
 
-    pub fn get_dealer(&self) -> &Dealer {
-        &self.dealer
-    }
-
-    pub fn get_users(&self) -> &Vec<User> {
-        &self.users
-    }
-
     pub fn game_loop(&mut self) -> GameState {
         println!("Dealing...");
         self.deal();
@@ -96,7 +88,7 @@ impl Game {
         //Initial betting
         //let mut users = self.users.clone();
         for idx in 0..self.users.len() {
-            if self.users[idx].do_turn(idx) == false {
+            if self.users[idx].do_turn() == false {
                 return GameState::Stopping;
             }
         }
@@ -114,7 +106,7 @@ impl Game {
 
         for idx in 0..self.users.len() {
             self.users[idx].append_hand(&mut self.flop.to_vec());
-            if self.users[idx].do_turn(idx) == false {
+            if self.users[idx].do_turn() == false {
                 return GameState::Stopping;
             }
         }
@@ -132,7 +124,7 @@ impl Game {
 
         for idx in 0..self.users.len() {
             self.users[idx].append_hand(&mut self.turn.to_vec());
-            if self.users[idx].do_turn(idx) == false {
+            if self.users[idx].do_turn() == false {
                 return GameState::Stopping;
             }
         }
@@ -150,7 +142,7 @@ impl Game {
 
         for idx in 0..self.users.len() {
             self.users[idx].append_hand(&mut self.river.to_vec());
-            if self.users[idx].do_turn(idx) == false {
+            if self.users[idx].do_turn() == false {
                 return GameState::Stopping;
             }
         }
@@ -197,91 +189,13 @@ impl Game {
 
         self.deck = VecDeque::from(vec);
     }
-}
 
-//? Tests
-
-#[test]
-fn deck_test() {
-    let mut gayme = Game::new();
-    println!("{:?}", gayme.deck);
-    println!("Testing shuffling\n\n");
-    gayme.shuffle(true);
-    println!("{:?}", gayme.deck);
-}
-
-#[test]
-fn users_test() {
-    let mut gayme = Game::new();
-    //gayme.shuffle();
-    gayme.deal();
-    println!("{:?}", gayme.users);
-    println!("\n\n{:?}", gayme.deck);
-}
-
-#[test]
-fn hand_test() {
-    let mut user = player::User::new();
-    let mut cards = Vec::<card::Card>::new();
-    cards.push(card::Card::new('D', "King", 10));
-    cards.push(card::Card::new('S', "Queen", 10));
-    cards.push(card::Card::new('C', "Jack", 10));
-    cards.push(card::Card::new('H', "Ace", 1));
-
-    user.take_cards(cards);
-    user.show_cards();
-}
-
-#[test]
-fn game_shuffle_hand_test() {
-    let mut gayme = Game::new();
-    gayme.shuffle(true);
-    gayme.deal();
-
-    println!("Dealer:");
-    gayme.get_dealer().show_cards();
-
-    let showdown = gayme.get_users().clone();
-    for user in &showdown {
-        println!(
-            "Player: {}",
-            showdown.iter().position(|x| x == user).unwrap() + 1
-        );
-        user.show_cards();
+    
+    pub fn get_dealer(&self) -> &Dealer {
+        &self.dealer
     }
-}
 
-#[test]
-fn invalid_card_test() {
-    let mut user = User::new();
-    user.take_cards(vec![
-        Card::new('I', "Invalid", 0),
-        Card::new('S', "King", 10),
-    ]);
-    user.show_cards();
-}
-
-#[test]
-fn straight_flush_test() {
-    let compare = ToCompare::new();
-    let mut hand = Vec::<Card>::new();
-
-    hand.push(Card::new('S', "Ace", 1));
-    hand.push(Card::new('S', "Two", 2));
-    hand.push(Card::new('S', "Three", 3));
-    hand.push(Card::new('S', "Four", 4));
-    hand.push(Card::new('S', "Five", 5));
-
-    //Test straight flush
-    assert_eq!(compare.compare(&hand), 8);
-
-    hand.clear();
-    hand.push(Card::new('S', "Ace", 1));
-    hand.push(Card::new('S', "Ten", 10));
-    hand.push(Card::new('S', "Jack", 10));
-    hand.push(Card::new('S', "Queen", 10));
-    hand.push(Card::new('S', "King", 10));
-
-    //Test royal flush
-    assert_eq!(compare.compare(&hand), 9);
+    pub fn get_users(&self) -> &Vec<User> {
+        &self.users
+    }
 }

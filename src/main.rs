@@ -3,10 +3,10 @@ use game::{Game, GameState};
 use player::*;
 use std::io::{stdin, stdout, Write};
 
-mod card;
-mod compare;
 mod game;
 mod player;
+mod card;
+mod compare;
 
 macro_rules! input {
     () => {

@@ -1,4 +1,4 @@
-use crate::{card::Card, player::Hand};
+use crate::card::Card;
 
 #[derive(Clone)]
 pub struct ToCompare {
@@ -149,9 +149,7 @@ fn find_flush(comp: &Vec<Card>) -> (bool, i8) {
 }
 
 fn find_full_house(comp: &Vec<Card>) -> (bool, i8) {
-    //! TODO, HARD TO IMPLEMENT
-
-    (false, 6)
+    (find_3ok(&comp).0 && find_one_pair(&comp).0, 6)
 }
 
 fn find_4ok(comp: &Vec<Card>) -> (bool, i8) {
