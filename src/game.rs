@@ -159,7 +159,7 @@ impl Game {
         let score = self.compare.compare(&self.users[0].get_hand_as_vec());
         let dealer_score = self.compare.compare(&self.dealer.get_hand_as_vec());
 
-        return match score > dealer_score {
+        return match score >= dealer_score {
             true => GameState::Winning,
             false => GameState::Losing,
         }
