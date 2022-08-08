@@ -1,12 +1,12 @@
+use compare::ToCompare;
 use game::{Game, GameState};
 use player::*;
 use std::io::{stdin, stdout, Write};
-use compare::ToCompare;
 
-mod game;
 mod card;
-mod player;
 mod compare;
+mod game;
+mod player;
 
 macro_rules! input {
     () => {
@@ -15,7 +15,7 @@ macro_rules! input {
     ($inp: expr) => {
         stdin().read_line(&mut $inp).unwrap();
         stdout().flush().unwrap();
-    }
+    };
 }
 
 fn main() {
@@ -35,8 +35,7 @@ fn main() {
                 let mut t = game.get_dealer().get_hand();
                 t.sort();
                 t.show_hand();
-                
-            },
+            }
             GameState::Losing => {
                 println!("Sorry, but you did not win...");
                 println!("You had a {}", get_results(&game.get_users()[0], &compare));
@@ -44,7 +43,10 @@ fn main() {
                 println!("Dealer's hand:");
                 game.get_dealer().show_cards();
 
-                println!("The dealer had a {}", get_results(game.get_dealer(), &compare));
+                println!(
+                    "The dealer had a {}",
+                    get_results(game.get_dealer(), &compare)
+                );
 
                 let temp = game.get_users();
                 if temp.len() >= 1 {
@@ -53,8 +55,7 @@ fn main() {
                         temp[idx].show_cards();
                     }
                 }
-                
-            },
+            }
             GameState::Winning => {
                 println!("Congrats! You Won!");
                 println!("You had a {}", get_results(&game.get_users()[0], &compare));
@@ -62,7 +63,10 @@ fn main() {
                 println!("Dealer's hand:");
                 game.get_dealer().show_cards();
 
-                println!("The dealer only had a {}", get_results(game.get_dealer(), &compare));
+                println!(
+                    "The dealer only had a {}",
+                    get_results(game.get_dealer(), &compare)
+                );
 
                 let temp = game.get_users();
                 if temp.len() >= 1 {
@@ -72,7 +76,7 @@ fn main() {
                         println!("They had a {}", get_results(&temp[idx], &compare));
                     }
                 }
-            },
+            }
         };
         round += 1;
     }
@@ -96,10 +100,10 @@ fn menu(round: i32) -> bool {
     false
 }
 
-fn get_results<T>(player: &T, comp: &ToCompare) -> String 
-where T: Player
+fn get_results<T>(player: &T, comp: &ToCompare) -> String
+where
+    T: Player,
 {
-
     let ret = match comp.compare(&player.get_hand_as_vec()) {
         0 => "High Card!",
         1 => "One Pair!",
@@ -113,6 +117,5 @@ where T: Player
         9 => "Royal Flush!",
         _ => "Error!",
     };
-
     ret.to_owned()
 }

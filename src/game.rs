@@ -1,7 +1,7 @@
 use crate::{
-    card::{Card, self},
-    player::{Dealer, User, Player, Hand, self},
-    compare::ToCompare,
+    card::{self, Card},
+    compare::{self, ToCompare},
+    player::{self, Dealer, Hand, Player, User},
 };
 use rand::{seq::SliceRandom, thread_rng};
 use std::collections::VecDeque;
@@ -62,8 +62,7 @@ impl Game {
         let user_count = 1;
         if user_count >= 2 {
             println!("Loading Players...");
-        }
-        else {
+        } else {
             println!("Loading Player...");
         }
         let dealer = Dealer::new();
@@ -162,7 +161,7 @@ impl Game {
         return match score >= dealer_score {
             true => GameState::Winning,
             false => GameState::Losing,
-        }
+        };
     }
 
     //Shhh... since im too lazy to try and implement the standard method of dealing, im just gonna shuffle it between every drawing of 5 cards
@@ -220,7 +219,6 @@ fn users_test() {
     println!("\n\n{:?}", gayme.deck);
 }
 
-
 #[test]
 fn hand_test() {
     let mut user = player::User::new();
@@ -256,6 +254,34 @@ fn game_shuffle_hand_test() {
 #[test]
 fn invalid_card_test() {
     let mut user = User::new();
-    user.take_cards(vec![Card::new('I', "Invalid", 0), Card::new('S', "King", 10)]);
+    user.take_cards(vec![
+        Card::new('I', "Invalid", 0),
+        Card::new('S', "King", 10),
+    ]);
     user.show_cards();
+}
+
+#[test]
+fn straight_flush_test() {
+    let compare = ToCompare::new();
+    let mut hand = Vec::<Card>::new();
+
+    hand.push(Card::new('S', "Ace", 1));
+    hand.push(Card::new('S', "Two", 2));
+    hand.push(Card::new('S', "Three", 3));
+    hand.push(Card::new('S', "Four", 4));
+    hand.push(Card::new('S', "Five", 5));
+
+    //Test straight flush
+    assert_eq!(compare.compare(&hand), 8);
+
+    hand.clear();
+    hand.push(Card::new('S', "Ace", 1));
+    hand.push(Card::new('S', "Ten", 10));
+    hand.push(Card::new('S', "Jack", 10));
+    hand.push(Card::new('S', "Queen", 10));
+    hand.push(Card::new('S', "King", 10));
+
+    //Test royal flush
+    assert_eq!(compare.compare(&hand), 9);
 }

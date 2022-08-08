@@ -38,9 +38,9 @@ fn find_one_pair(comp: &Vec<Card>) -> (bool, i8) {
     let mut ret = false;
 
     for idx in 1..temp.len() {
-        if temp[idx-1].get_face() == temp[idx].get_face() {
+        if temp[idx - 1].get_face() == temp[idx].get_face() {
             ret = true;
-            break
+            break;
         }
     }
 
@@ -54,13 +54,13 @@ fn find_two_pair(comp: &Vec<Card>) -> (bool, i8) {
     let mut t_char = '0';
 
     for idx in 1..temp.len() {
-        if temp[idx-1].get_face() == temp[idx].get_face() {
+        if temp[idx - 1].get_face() == temp[idx].get_face() {
             t_char = temp[idx].get_face();
             continue;
         }
-        if temp[idx-1].get_face() == temp[idx].get_face() && temp[idx].get_face() != t_char {
+        if temp[idx - 1].get_face() == temp[idx].get_face() && temp[idx].get_face() != t_char {
             ret = true;
-            break
+            break;
         }
     }
 
@@ -73,9 +73,9 @@ fn find_3ok(comp: &Vec<Card>) -> (bool, i8) {
     let mut ret = false;
 
     for idx in 2..temp.len() {
-        if temp[idx-2].get_face() == temp[idx].get_face() {
+        if temp[idx - 2].get_face() == temp[idx].get_face() {
             ret = true;
-            break
+            break;
         }
     }
 
@@ -87,6 +87,7 @@ fn find_straight(comp: &Vec<Card>) -> (bool, i8) {
     temp.sort_by(|a, b| a.get_face_value().cmp(&b.get_face_value()));
     let mut cnt = 0;
     let mut ace = false;
+    let mut acetmp = false;
     let mut suit: char = 'S';
 
     for idx in 0..temp.len() {
@@ -95,21 +96,28 @@ fn find_straight(comp: &Vec<Card>) -> (bool, i8) {
         }
         if temp[idx].get_face_value() == 1 {
             ace = true;
+            acetmp = true;
             continue;
         }
         if temp[idx].get_suit() != suit {
             suit = temp[idx].get_suit();
             ace = false;
+            acetmp = false;
             cnt = 0;
             continue;
-        }
-        else if temp[idx].get_face_value() == 13 && ace {
+        } else if temp[idx].get_face_value() == 13 && ace {
             cnt += 2;
             continue;
-        }
-        else if temp[idx].get_face_value() == temp[idx].get_face_value() - 1 {
+        } else if temp[idx].get_face_value() - 1 == temp[idx - 1].get_face_value() {
+            if ace && temp[idx].get_face_value() == 2 {
+                cnt += 1;
+                ace = false;
+            }
             cnt += 1;
             continue;
+        } else if acetmp {
+            cnt += 1;
+            acetmp = false;
         }
     }
 
@@ -131,7 +139,7 @@ fn find_flush(comp: &Vec<Card>) -> (bool, i8) {
             'H' => cnth += 1,
             'D' => cntd += 1,
             'C' => cntc += 1,
-            _ => {},
+            _ => {}
         };
     });
 
@@ -152,9 +160,11 @@ fn find_4ok(comp: &Vec<Card>) -> (bool, i8) {
     let mut ret = false;
 
     for idx in 3..temp.len() {
-        if temp[idx-3].get_face() == temp[idx].get_face() {
+        let t1 = temp[idx - 3].get_face();
+        let t2 = temp[idx].get_face();
+        if t1 == t2 {
             ret = true;
-            break
+            break;
         }
     }
 
@@ -166,6 +176,26 @@ fn find_straight_flush(comp: &Vec<Card>) -> (bool, i8) {
 }
 
 fn find_royal_flush(comp: &Vec<Card>) -> (bool, i8) {
-    //? Need to implement, but it's not unnecessary
+    //? Should to implement, but it's not unnecessary
+
+    let strfl = find_straight_flush(&comp).0;
+    if strfl {
+        let mut cnt = 0;
+        comp.iter().for_each(|f| {
+            if f.get_face_value() == 1 {
+                cnt += 1;
+            } else if f.get_face_value() == 10 {
+                cnt += 1;
+            } else if f.get_face_value() == 11 {
+                cnt += 1;
+            } else if f.get_face_value() == 12 {
+                cnt += 1;
+            } else if f.get_face_value() == 13 {
+                cnt += 1;
+            }
+        });
+        return (cnt >= 5, 9);
+    }
+
     (false, 9)
 }
