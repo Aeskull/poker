@@ -56,9 +56,8 @@ impl Game {
             input!(inp);
             inp = inp.trim().to_owned();
         }
-        let player_count = inp.parse::<i32>().unwrap();
-
-        println!("Loading players..."); */
+        let player_count = inp.parse::<i32>().unwrap(); */
+        
         let user_count = 1;
         if user_count >= 2 {
             println!("Loading Players...");
