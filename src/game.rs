@@ -15,7 +15,7 @@ pub enum GameState {
 #[derive(Clone)]
 pub struct Game {
     compare: ToCompare,
-    pub deck: VecDeque<Card>,
+    deck: VecDeque<Card>,
     users: Vec<User>,
     dealer: Dealer,
     flop: Hand,
@@ -57,7 +57,7 @@ impl Game {
             inp = inp.trim().to_owned();
         }
         let player_count = inp.parse::<i32>().unwrap(); */
-        
+
         let user_count = 1;
         if user_count >= 2 {
             println!("Loading Players...");

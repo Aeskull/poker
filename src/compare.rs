@@ -37,10 +37,18 @@ fn find_one_pair(comp: &Vec<Card>) -> (bool, i8) {
     temp.sort_by(|a, b| a.get_face().cmp(&b.get_face()));
     let mut ret = false;
 
-    for idx in 1..temp.len() {
-        if temp[idx - 1].get_face() == temp[idx].get_face() {
+    if comp.len() == 2 {
+        if comp[0].get_face() == comp[1].get_face() {
             ret = true;
-            break;
+        }
+    } else {
+        for idx in 1..temp.len() - 1 {
+            if temp[idx - 1].get_face() == temp[idx].get_face()
+                && temp[idx].get_face() != temp[idx + 1].get_face()
+            {
+                ret = true;
+                break;
+            }
         }
     }
 
@@ -54,7 +62,7 @@ fn find_two_pair(comp: &Vec<Card>) -> (bool, i8) {
     let mut t_char = '0';
 
     for idx in 1..temp.len() {
-        if temp[idx - 1].get_face() == temp[idx].get_face() {
+        if temp[idx - 1].get_face() == temp[idx].get_face() && t_char == '0' {
             t_char = temp[idx].get_face();
             continue;
         }
@@ -108,8 +116,11 @@ fn find_straight(comp: &Vec<Card>) -> (bool, i8) {
         } else if temp[idx].get_face_value() == 13 && ace {
             cnt += 2;
             continue;
-        } else if temp[idx].get_face_value() - 1 == temp[idx - 1].get_face_value() {
-            if ace && temp[idx].get_face_value() == 2 {
+        } else if idx >= 1 {
+            if temp[idx].get_face_value() - 1 == temp[idx - 1].get_face_value()
+                && ace
+                && temp[idx].get_face_value() == 2
+            {
                 cnt += 1;
                 ace = false;
             }
