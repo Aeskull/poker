@@ -190,7 +190,6 @@ impl Game {
         self.deck = VecDeque::from(vec);
     }
 
-    
     pub fn get_dealer(&self) -> &Dealer {
         &self.dealer
     }
