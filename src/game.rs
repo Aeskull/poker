@@ -98,7 +98,7 @@ impl Game {
         //let mut users = self.users.clone();
         for idx in 0..self.users.len() {
             if self.users[idx].do_turn(idx) == false {
-                return GameState::Losing;
+                return GameState::Stopping;
             }
         }
 

@@ -31,7 +31,7 @@ fn main() {
             GameState::Stopping => {
                 println!("You have folded :(");
 
-                println!("Dealer's cards: ");
+                println!("Dealer's hand:");
                 let mut t = game.get_dealer().get_hand();
                 t.sort();
                 t.show_hand();
@@ -41,7 +41,7 @@ fn main() {
                 println!("Sorry, but you did not win...");
                 println!("You had a {}", get_results(&game.get_users()[0], &compare));
 
-                println!("Dealer's cards: ");
+                println!("Dealer's hand:");
                 game.get_dealer().show_cards();
 
                 println!("The dealer had a {}", get_results(game.get_dealer(), &compare));
@@ -59,7 +59,7 @@ fn main() {
                 println!("Congrats! You Won!");
                 println!("You had a {}", get_results(&game.get_users()[0], &compare));
 
-                println!("Dealer's card:");
+                println!("Dealer's hand:");
                 game.get_dealer().show_cards();
 
                 println!("The dealer only had a {}", get_results(game.get_dealer(), &compare));

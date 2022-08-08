@@ -142,16 +142,10 @@ impl Hand {
             .map(|x| {
                 format!(
                     "|    {}|",
-                    if x.get_value().to_string().chars().nth(0).unwrap() == x.get_face() {
-                        x.get_suit().to_string()
-                    } else if x.get_value() == 0 {
-                        " ".to_owned()
+                    if x.get_value() == 0 {
+                        ' '
                     } else {
-                        match x.get_value().to_string().len() {
-                            1 if x.get_value() != 0 => x.get_value().to_string(),
-                            2 => format!("\x08{}", x.get_value()),
-                            _ => "".to_owned(),
-                        }
+                        x.get_suit()
                     }
                 )
             })
