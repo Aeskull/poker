@@ -1,21 +1,14 @@
 use crate::{
     card::{Card, self},
-    player::{Dealer, User, Player, self},
+    player::{Dealer, User, Player, Hand, self},
 };
 use rand::{seq::SliceRandom, thread_rng};
-use std::{
-    collections::VecDeque,
-    io::{stdin, stdout, Write},
-};
+use std::collections::VecDeque;
 
-macro_rules! input {
-    () => {
-        stdout().flush().unwrap();
-    };
-    ($input: expr) => {
-        stdout().flush().unwrap();
-        stdin().read_line(&mut $input).unwrap();
-    };
+pub enum GameState {
+    Stopping,
+    Losing,
+    Winning,
 }
 
 #[derive(Clone)]
@@ -23,6 +16,9 @@ pub struct Game {
     deck: VecDeque<Card>,
     users: Vec<User>,
     dealer: Dealer,
+    flop: Hand,
+    turn: Hand,
+    river: Hand,
 }
 
 impl Game {
@@ -60,22 +56,25 @@ impl Game {
         let player_count = inp.parse::<i32>().unwrap();
 
         println!("Loading players..."); */
-        let player_count = 1;
-        if player_count >= 2 {
+        let user_count = 1;
+        if user_count >= 2 {
             println!("Loading Players...");
         }
         else {
             println!("Loading Player...");
         }
-        let server = Dealer::new();
+        let dealer = Dealer::new();
         let mut users = Vec::<User>::new();
-        for _x in 0..player_count {
+        for _x in 0..user_count {
             users.push(User::new());
         }
         Game {
             deck,
             users,
-            dealer: server,
+            dealer,
+            flop: Hand::new(),
+            turn: Hand::new(),
+            river: Hand::new(),
         }
     }
 
@@ -83,29 +82,88 @@ impl Game {
         &self.dealer
     }
 
-    pub fn get_players(&self) -> &Vec<User> {
+    pub fn get_users(&self) -> &Vec<User> {
         &self.users
     }
 
-    pub fn game_loop(&mut self) -> bool {
+    pub fn game_loop(&mut self) -> GameState {
         println!("Dealing...");
         self.deal();
-        let mut players = self.users.clone();
-        for idx in 0..players.len() {
-            players[idx].do_turn();
+
+        //Initial betting
+        //let mut users = self.users.clone();
+        for idx in 0..self.users.len() {
+            if self.users[idx].do_turn(idx) == false {
+                return GameState::Losing;
+            }
         }
-        true
+
+        //Burn
+        let _ = self.draw(1);
+
+        //Draw the flop
+        println!("The Flop:");
+        self.flop.contents = self.draw(3);
+        self.flop.show_hand();
+
+        //Add to dealer deck
+        self.dealer.append_hand(&mut self.flop.to_vec());
+
+        for idx in 0..self.users.len() {
+            self.users[idx].append_hand(&mut self.flop.to_vec());
+            if self.users[idx].do_turn(idx) == false {
+                return GameState::Stopping;
+            }
+        }
+
+        //Burn
+        let _ = self.draw(1);
+
+        //Draw the turn
+        println!("The Turn:");
+        self.turn.contents = self.draw(1);
+        self.turn.show_hand();
+
+        //Add to dealer deck
+        self.dealer.append_hand(&mut self.turn.to_vec());
+
+        for idx in 0..self.users.len() {
+            self.users[idx].append_hand(&mut self.turn.to_vec());
+            if self.users[idx].do_turn(idx) == false {
+                return GameState::Stopping;
+            }
+        }
+
+        //Burn
+        let _ = self.draw(1);
+
+        //Draw the river
+        println!("The River:");
+        self.river.contents = self.draw(1);
+        self.river.show_hand();
+
+        //Add to dealer deck
+        self.dealer.append_hand(&mut self.river.to_vec());
+
+        for idx in 0..self.users.len() {
+            self.users[idx].append_hand(&mut self.river.to_vec());
+            if self.users[idx].do_turn(idx) == false {
+                return GameState::Stopping;
+            }
+        }
+
+        GameState::Winning
     }
 
     //Shhh... since im too lazy to try and implement the standard method of dealing, im just gonna shuffle it between every drawing of 5 cards
     pub fn deal(&mut self) {
-        let mut players = self.users.clone();
-        for idx in 0..players.len() {
-            players[idx].take_cards(self.draw(5));
-            self.users[idx] = players[idx].clone();
+        let mut users = self.users.clone();
+        for idx in 0..users.len() {
+            users[idx].take_cards(self.draw(2));
+            self.users[idx] = users[idx].clone();
             self.shuffle(false);
         }
-        let drawn = self.draw(5);
+        let drawn = self.draw(2);
         self.dealer.take_cards(drawn);
     }
 
@@ -132,22 +190,7 @@ impl Game {
     }
 }
 
-//Tests
-#[test]
-fn draw_test() {
-    let mut gayme = Game::new();
-    let mut g = VecDeque::<Card>::new();
-    for x in 1..=2 {
-        g.push_back(Card::new('A', "A", x));
-    }
-    let mut y = VecDeque::<Card>::new();
-    for a in 3..=5 {
-        y.push_back(Card::new('A', "A", a));
-    }
-    let t = gayme.draw(2);
-    assert_eq!(VecDeque::from(t), g);
-    assert_eq!(gayme.deck, y);
-}
+//? Tests
 
 #[test]
 fn deck_test() {
@@ -159,7 +202,7 @@ fn deck_test() {
 }
 
 #[test]
-fn players_test() {
+fn users_test() {
     let mut gayme = Game::new();
     //gayme.shuffle();
     gayme.deal();
@@ -190,7 +233,7 @@ fn game_shuffle_hand_test() {
     println!("Dealer:");
     gayme.get_dealer().show_cards();
 
-    let showdown = gayme.get_players().clone();
+    let showdown = gayme.get_users().clone();
     for user in &showdown {
         println!(
             "Player: {}",

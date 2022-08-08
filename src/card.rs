@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq, Eq, Clone)]
+use std::cmp::Ordering;
+
+#[derive(Debug, PartialEq, Eq, Clone, PartialOrd)]
 pub struct Card {
     suit: Suit,
     face: String,
@@ -47,16 +49,35 @@ impl Card {
         }
     }
 
+    pub fn get_face_value(&self) -> i8 {
+        match self.face.as_str() {
+            "Ace" => 1,
+            "Two" => 2,
+            "Three" => 3,
+            "Four" => 4,
+            "Five" => 5,
+            "Six" => 6,
+            "Seven" => 7,
+            "Eight" => 8,
+            "Nine" => 9,
+            "Ten" => 10,
+            "Jack" => 11,
+            "Queen" => 12,
+            "King" => 13,
+            _ => 0,
+        }
+    }
+
     pub fn get_value(&self) -> i32 {
         self.value
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 enum Suit {
-    Diamonds,
-    Clubs,
     Spades,
     Hearts,
+    Diamonds,
+    Clubs,
     None,
 }
