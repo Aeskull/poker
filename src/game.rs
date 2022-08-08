@@ -155,7 +155,7 @@ impl Game {
         };
     }
 
-    //Shhh... since im too lazy to try and implement the standard method of dealing, im just gonna shuffle it between every drawing of 5 cards
+    //Shhh... since im too lazy to try and implement the standard method of dealing, im just gonna shuffle it between every drawing of cards
     pub fn deal(&mut self) {
         let mut users = self.users.clone();
         for idx in 0..users.len() {
