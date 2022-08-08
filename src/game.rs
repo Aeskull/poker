@@ -1,6 +1,7 @@
 use crate::{
     card::{Card, self},
     player::{Dealer, User, Player, Hand, self},
+    compare::ToCompare,
 };
 use rand::{seq::SliceRandom, thread_rng};
 use std::collections::VecDeque;
@@ -13,6 +14,7 @@ pub enum GameState {
 
 #[derive(Clone)]
 pub struct Game {
+    compare: ToCompare,
     deck: VecDeque<Card>,
     users: Vec<User>,
     dealer: Dealer,
@@ -23,6 +25,7 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
+        let compare = ToCompare::new();
         println!("Loading deck...");
         let mut deck = VecDeque::<Card>::new();
         let suits = vec!['D', 'C', 'S', 'H'];
@@ -69,6 +72,7 @@ impl Game {
             users.push(User::new());
         }
         Game {
+            compare,
             deck,
             users,
             dealer,
@@ -152,7 +156,13 @@ impl Game {
             }
         }
 
-        GameState::Winning
+        let score = self.compare.compare(&self.users[0].get_hand_as_vec());
+        let dealer_score = self.compare.compare(&self.dealer.get_hand_as_vec());
+
+        return match score > dealer_score {
+            true => GameState::Winning,
+            false => GameState::Losing,
+        }
     }
 
     //Shhh... since im too lazy to try and implement the standard method of dealing, im just gonna shuffle it between every drawing of 5 cards

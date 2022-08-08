@@ -1,5 +1,6 @@
 use crate::{card::Card, player::Hand};
 
+#[derive(Clone)]
 pub struct ToCompare {
     checkers: Vec<&'static dyn Fn(&Vec<Card>) -> (bool, i8)>,
 }

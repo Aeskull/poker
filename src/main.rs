@@ -35,7 +35,6 @@ fn main() {
                 let mut t = game.get_dealer().get_hand();
                 t.sort();
                 t.show_hand();
-
                 
             },
             GameState::Losing => {
