@@ -165,7 +165,7 @@ impl Hand {
         let mut clubs = Vec::<Card>::new();
 
         self.contents.drain(..).for_each(|x| {
-            let _ = match x.get_suit() {
+            match x.get_suit() {
                 'S' => spades.push(x),
                 'H' => hearts.push(x),
                 'D' => diamonds.push(x),

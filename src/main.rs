@@ -27,7 +27,7 @@ fn main() {
     while menu(round) {
         let mut game = Game::new();
         game.shuffle(true);
-        let _ = match game.game_loop() {
+        match game.game_loop() {
             GameState::Stopping => {
                 println!("You have folded :(");
 

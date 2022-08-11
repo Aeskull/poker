@@ -145,7 +145,7 @@ fn find_flush(comp: &Vec<Card>) -> (bool, i8) {
     let mut cntc = 0;
 
     temp.iter().for_each(|f| {
-        let _ = match f.get_suit() {
+        match f.get_suit() {
             'S' => cnts += 1,
             'H' => cnth += 1,
             'D' => cntd += 1,
